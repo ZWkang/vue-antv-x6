@@ -8,9 +8,15 @@ dependencies:
   '@antv/x6':
     specifier: ^2.13.1
     version: 2.13.1
+  '@antv/x6-plugin-dnd':
+    specifier: ^2.0.6
+    version: 2.0.6(@antv/x6@2.13.1)
   '@antv/x6-plugin-minimap':
     specifier: ^2.0.5
     version: 2.0.5(@antv/x6@2.13.1)
+  '@antv/x6-plugin-snapline':
+    specifier: ^2.1.7
+    version: 2.1.7(@antv/x6@2.13.1)
   '@antv/x6-plugin-transform':
     specifier: ^2.1.7
     version: 2.1.7(@antv/x6@2.13.1)
@@ -86,8 +92,24 @@ packages:
     resolution: {integrity: sha512-MId6riEQkxphBpVeTcL4ZNXL4lScyvDEPLyIafvWMcWNTGK0jgkK7N20XSzqt8ltJb0mGUso5s56mrk8ysHu2A==}
     dev: false
 
+  /@antv/x6-plugin-dnd@2.0.6(@antv/x6@2.13.1):
+    resolution: {integrity: sha512-HD0PgL27ZV+X1Q0gwQ0ltm67J5okvAdGndFv5p8Pp9bV5PKe8B2BzLF1CZwhBroz58xkXJVcGH0TT4NmrHjbRw==}
+    peerDependencies:
+      '@antv/x6': ^2.x
+    dependencies:
+      '@antv/x6': 2.13.1
+    dev: false
+
   /@antv/x6-plugin-minimap@2.0.5(@antv/x6@2.13.1):
     resolution: {integrity: sha512-6L+W80AvoEZG4cwRxgPxvYLeKhqkBJEt4hTnZ2NWWcvBx02F9RJKRZVEEUemqE12mKUv4HT6WtbQV0QIfkTEMw==}
+    peerDependencies:
+      '@antv/x6': ^2.x
+    dependencies:
+      '@antv/x6': 2.13.1
+    dev: false
+
+  /@antv/x6-plugin-snapline@2.1.7(@antv/x6@2.13.1):
+    resolution: {integrity: sha512-AsysoCb9vES0U2USNhEpYuO/W8I0aYfkhlbee5Kt4NYiMfQfZKQyqW/YjDVaS2pm38C1NKu1LdPVk/BBr4CasA==}
     peerDependencies:
       '@antv/x6': ^2.x
     dependencies:

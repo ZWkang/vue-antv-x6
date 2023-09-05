@@ -54,25 +54,6 @@ onMounted(() => {
       ]);
     }
   });
-
-  container.value.on("cell:mouseleave", ({ cell }) => {
-    // console.log(cell)
-    if (cell.isNode()) {
-      cell.removeTools();
-    }
-  });
-
-  // container.value.use(
-  //   new Snapline({
-  //     enabled: true,
-  //   })
-  // );
-
-  // container.value.use(
-  //   new MiniMap({
-  //     container: document.querySelector('#container-minimap')!,
-  //   })
-  // )
   const rect = container.value.addNode({
     shape: "rect",
     x: 100,
@@ -137,6 +118,11 @@ onMounted(() => {
     ],
   });
 
+  setTimeout(() => {
+    // console.log(container.value?.get());
+    // rect2.getConnectionPoint();
+    console.log(container.value?.getConnectedEdges(rect2))
+  }, 6000)
   // container.value.removeCell('111')
 });
 

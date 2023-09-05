@@ -1,18 +1,15 @@
-import type { Diagram as DiagramType } from "@tencent/tvision-t3";
-import { DiagramPropTypes } from "@tencent/tvision-t3/dist/esm/diagram/container";
-// @ts-expect-error
-import { Diagram } from "application/static/tvisionT3/index.js?v=3";
 
-import { turnObjectToMap } from "@/module/application/views/real-time/real-time-instance/utils/tvision-oop/DiagramBase";
 
 // Diagram
 import { DiagramController } from "./DiagramController";
-import { EventEmitter } from "./EventEmitter";
+
 import { FeatureManager } from "./FeatureManager";
 import { LinkNodeHelper } from "./LinkNodeHelper";
 
 import { Graph, Events, Basecoat, Shape, Node, Edge, Cell } from "@antv/x6";
-import type { EventArgs } from "@antv/x6";
+import type { EventArgs, } from "@antv/x6";
+
+import type { Options } from '@antv/x6/es/graph/options'
 
 // export const EVENT_NAME = {
 //   LOADED: 'loaded',
@@ -51,7 +48,7 @@ export class DiagramBase extends Basecoat<Events<any>> {
   public controller: DiagramController | null;
 
   public linkNodeHelper: LinkNodeHelper;
-  public featureManager: FeatureManager<this>;
+  public featureManager: FeatureManager;
 
   private _container: HTMLDivElement | null = null;
 
@@ -62,7 +59,7 @@ export class DiagramBase extends Basecoat<Events<any>> {
     this.target = null;
 
     this.linkNodeHelper = new LinkNodeHelper(this);
-    this.featureManager = new FeatureManager<this>(this);
+    this.featureManager = new FeatureManager(this);
   }
 
   get zoomValue() {
@@ -75,7 +72,7 @@ export class DiagramBase extends Basecoat<Events<any>> {
     this.featureManager.dispose();
   }
 
-  public init(target: string | HTMLDivElement, opts: DiagramPropTypes) {
+  public init(target: string | HTMLDivElement, opts: Partial<Options.Manual>) {
     this.target = initTarget(target);
 
     this.initDiagram(opts);
@@ -97,7 +94,7 @@ export class DiagramBase extends Basecoat<Events<any>> {
   }
 
   public getAllNodeMap() {
-    return turnObjectToMap(this.getInternalNodes());
+    // return turnObjectToMap(this.getInternalNodes());
   }
 
   /**
@@ -139,7 +136,7 @@ export class DiagramBase extends Basecoat<Events<any>> {
     this.removeNodeOrLink(data?.id);
   }
 
-  public removeNodeOrLink(id) {
+  public removeNodeOrLink(id: string) {
     if (!id) {
       return;
     }
@@ -156,14 +153,12 @@ export class DiagramBase extends Basecoat<Events<any>> {
     if (this.target === null) {
       throw new Error(`target: 不能为 ${this.target}`);
     }
-    this.diagram = new Diagram({
-      background: {
-        backgroundColor: "#f6f7fb",
-        dotSize: 2,
-      },
-      target: this.target,
-      ...opts,
-    });
+    this.diagram = new Graph(
+      {
+        container: this.target,
+        ...opts
+      }
+    )
   }
 
   public initTarget(target: string | HTMLDivElement) {
@@ -188,17 +183,7 @@ export class DiagramBase extends Basecoat<Events<any>> {
    */
   getLinks() {
     if (!this.diagram) return [];
-    // return this.diagram?.getLinks();
-    // const linkDataMap = this.diagram._linkDataMap as Record<
-    //   string | number,
-    //   any
-    // >;
     const links = this.diagram.getEdges();
-    // const result: any[] = [];
-    // Object.entries(linkDataMap).forEach(([key, val]) => {
-    //   result.push(val.props);
-    // });
-
 
     return links;
   }
@@ -234,15 +219,6 @@ export class DiagramBase extends Basecoat<Events<any>> {
 
   public appendNewNode(opts: Record<string, any>): void {}
   public appendNewLink(opts: Record<string, any>): void {}
-
-  public hackInitInternalEvents() {
-    Object.keys(EVENT_NAME).forEach((eventNameAction) => {
-      this?.diagram?.on(
-        EVENT_NAME[eventNameAction],
-        this.triggerWrapper(EVENT_NAME[eventNameAction])
-      );
-    });
-  }
 
   getContainerRect = () => {
     return this.diagram?.container.getBoundingClientRect() ?? null;

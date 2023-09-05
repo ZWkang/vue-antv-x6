@@ -1,4 +1,5 @@
 import type { DiagramBase } from "./DiagramBase";
+import type { FeatureBase } from "./Features/FeatureBase";
 
 export class FeatureContext {
   get diagram() {
@@ -7,6 +8,10 @@ export class FeatureContext {
   constructor(public container: DiagramBase) {
 
   }
+}
+
+type ClassStaticProperties<T> = {
+  [Key in keyof T as Key extends "prototype" ? never : T[Key] extends (...args: any[]) => any ? never : Key]: T[Key];
 }
 
 
@@ -55,7 +60,12 @@ export class FeatureManager {
     })
 
     const newWrapperList = [...preList, ...normalList, ...postList]
-    newWrapperList.forEach(manager => manager.install())
+    newWrapperList.forEach(manager => manager?.install())
+  }
+
+  public getPlugin<T extends typeof FeatureBase>(feature: T): InstanceType<T> | null {
+    const name = feature.featureName;
+    return this.managers.has(name) ? this.managers.get(name): null;
   }
 
   public dispose() {
