@@ -128,6 +128,15 @@ onMounted(() => {
       node_state: "SUCC",
       task_index: 2,
       flagText: "已完成",
+      node_inputs: [
+        {
+          key: '1',
+          type: 'port1',
+          label: 'port1',
+          description: 'xxxx',
+          table_name: 'xxx'
+        }
+      ]
     },
     ports: createPorts(
       {
@@ -196,7 +205,8 @@ onMounted(() => {
   setTimeout(() => {
     // console.log(container.value?.get());
     // rect2.getConnectionPoint();
-    console.log(container.value?.getConnectedEdges(rect2));
+    // console.log(container.value?.getConnectedEdges(rect2));
+    console.log(rect.getData());
   }, 6000);
   // container.value.removeCell('111')
 });
