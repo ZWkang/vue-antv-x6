@@ -17,6 +17,8 @@
     "@antv/x6-plugin-snapline": "^2.1.7",
     "@antv/x6-plugin-transform": "^2.1.7",
     "@antv/x6-vue-shape": "^2.1.1",
+    "@types/lodash-es": "^4.17.9",
+    "lodash-es": "^4.17.21",
     "pinia": "^2.1.6",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"

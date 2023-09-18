@@ -18,7 +18,7 @@ export class DragAnchorFeature extends FeatureBase {
     super(props);
   }
 
-
+  
   
 
   install() {

@@ -28,7 +28,7 @@ const ModelOutputAnchorColor = {
 
 function createPortGroup({
   type
-}: { type: string}, position: 'top' | 'bottom') {
+}: { type: string}, position: 'top' | 'bottom'| 'absolute') {
   const base = {
     position: {
       name: position,
@@ -49,6 +49,11 @@ function createPortGroup({
       type: type
     },
   }
+  if(position === 'absolute') {
+    (base as any).zIndex = 1002;
+
+    return base;
+  }
   if(position === 'bottom') {
     base.position.name = position;
 
@@ -59,6 +64,12 @@ function createPortGroup({
   return base;
 }
 
+function createDynamicNode({
+  type
+}: {type: string}, position: 'top' | 'bottom'){
+
+}
+
 function createPort({
   key,
   description,
@@ -67,7 +78,7 @@ function createPort({
   key: string,
   description: string,
   type: string
-}, id: string, position: 'top' | 'bottom') {
+}, id: string, position: 'top' | 'bottom' | 'absolute') {
 
   const base =  {
     id: `${id}:${key}-top`,
@@ -83,6 +94,45 @@ function createPort({
   if(position === 'bottom') {
     base.id = `${id}:${key}-bottom`;
     base.group = 'node_output';
+    return base;
+  }
+
+  return base;
+}
+
+function createAbsolutePort({
+  key,
+  description,
+  type
+}: {
+  key: string,
+  description: string,
+  type: string
+}, id: string, position: 'top' | 'bottom') {
+
+  const base =  {
+    id: `${id}:${key}-top`,
+    group: 'node_dynamic',
+    type: type,
+    args: {
+      key,
+      description,
+      type,
+      x: 0.5,
+      y: 0,
+    }
+  }
+
+
+  if(position === 'bottom') {
+    base.id = `${id}:${key}-bottom`;
+
+    base.group = 'node_dynamic';
+
+
+
+    base.args.x = 0.5;
+    base.args.y = 1;
     return base;
   }
 
@@ -108,9 +158,10 @@ export function createPorts(
       groups: {
         node_input: createPortGroup({ type: node_type }, 'top'),
         node_output: createPortGroup({ type: node_type }, 'bottom'),
+        node_dynamic: createPortGroup({ type: node_type }, 'absolute')
       },
       items: [
-        ...node_input.map((item) => createPort(item, node_id, 'top')),
+        ...node_input.map((item) => createAbsolutePort(item, node_id, 'top')),
         ...node_output.map((item) => createPort(item, node_id, 'bottom')),
       ]
     }

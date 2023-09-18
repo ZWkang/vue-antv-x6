@@ -23,6 +23,12 @@ dependencies:
   '@antv/x6-vue-shape':
     specifier: ^2.1.1
     version: 2.1.1(@antv/x6@2.13.1)(vue@3.3.4)
+  '@types/lodash-es':
+    specifier: ^4.17.9
+    version: 4.17.9
+  lodash-es:
+    specifier: ^4.17.21
+    version: 4.17.21
   pinia:
     specifier: ^2.1.6
     version: 2.1.6(typescript@5.1.6)(vue@3.3.4)
@@ -701,6 +707,16 @@ packages:
       '@types/tough-cookie': 4.0.2
       parse5: 7.1.2
     dev: true
+
+  /@types/lodash-es@4.17.9:
+    resolution: {integrity: sha512-ZTcmhiI3NNU7dEvWLZJkzG6ao49zOIjEgIE0RgV7wbPxU0f2xT3VSAHw2gmst8swH6V0YkLRGp4qPlX/6I90MQ==}
+    dependencies:
+      '@types/lodash': 4.14.198
+    dev: false
+
+  /@types/lodash@4.14.198:
+    resolution: {integrity: sha512-trNJ/vtMZYMLhfN45uLq4ShQSw0/S7xCTLLVM+WM1rmFpba/VS42jVUgaO3w/NOLiWR/09lnYk0yMaA/atdIsg==}
+    dev: false
 
   /@types/node@18.17.14:
     resolution: {integrity: sha512-ZE/5aB73CyGqgQULkLG87N9GnyGe5TcQjv34pwS8tfBs1IkCh0ASM69mydb2znqd6v0eX+9Ytvk6oQRqu8T1Vw==}
