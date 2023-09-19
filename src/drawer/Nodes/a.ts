@@ -81,7 +81,7 @@ function createPort({
 }, id: string, position: 'top' | 'bottom' | 'absolute') {
 
   const base =  {
-    id: `${id}:${key}-top`,
+    id: `${key}-top`,
     group: 'node_input',
     type: type,
     args: {
@@ -92,7 +92,7 @@ function createPort({
   }
 
   if(position === 'bottom') {
-    base.id = `${id}:${key}-bottom`;
+    base.id = `${key}-bottom`;
     base.group = 'node_output';
     return base;
   }
@@ -111,7 +111,7 @@ function createAbsolutePort({
 }, id: string, position: 'top' | 'bottom') {
 
   const base =  {
-    id: `${id}:${key}-top`,
+    id: `${key}-top`,
     group: 'node_dynamic',
     type: type,
     args: {
@@ -125,7 +125,7 @@ function createAbsolutePort({
 
 
   if(position === 'bottom') {
-    base.id = `${id}:${key}-bottom`;
+    base.id = `${key}-bottom`;
 
     base.group = 'node_dynamic';
 

@@ -1,6 +1,5 @@
-// import { Diagram, verticalTree } from '@tencent/tvision-t3';
 
-import { DiagramBase } from './DiagramBase';
+import type { DiagramBase } from './DiagramBase';
 
 export const DEFAULT_VERTICAL_LAYOUT_SIZE = [190, 100];
 

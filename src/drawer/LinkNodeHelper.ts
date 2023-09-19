@@ -1,4 +1,4 @@
-import { UpdateLinkItemProps } from '../../../real-time/real-time-instance/utils/tvision-oop/businessCourse/EditDiagram';
+// import { UpdateLinkItemProps } from '../../../real-time/real-time-instance/utils/tvision-oop/businessCourse/EditDiagram';
 import { DiagramBase } from './DiagramBase';
 
 function turnObjectToMap<T extends Record<string, any>>(obj: T): Map<string, any> {

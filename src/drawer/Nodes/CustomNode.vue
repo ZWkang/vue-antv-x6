@@ -19,14 +19,14 @@
       {{ title }}
     </div>
 
-    <div class="status-icon" :class="nodeStateIcon"></div>
+    <div class="status-icon" :class="nodeStateIcon" v-if="nodeStateIcon"></div>
 
-    <div class="tvision-preview" title="被选中的节点将不会被合并执行"></div>
-    <div class="tvision-node-dom-task_index">
+    <div class="tvision-preview" title="被选中的节点将不会被合并执行" v-if="showPreview"></div>
+    <div class="tvision-node-dom-task_index" v-if="task_index">
       {{ task_index }}
     </div>
 
-    <div class="tvision-node-dom-task_index flag-text">
+    <div class="tvision-node-dom-task_index flag-text" v-if="flagText">
       {{ flagText }}
     </div>
   </div>
@@ -86,7 +86,7 @@ export default defineComponent({
 
       console.log(task_index);
 
-      this.task_index = String(task_index);
+      this.task_index = task_index && String(task_index) ;
 
       this.node_state = node_state;
 

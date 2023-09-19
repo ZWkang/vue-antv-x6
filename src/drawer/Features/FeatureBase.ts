@@ -5,7 +5,7 @@ import type { FeatureContext } from "../FeatureManager";
 export abstract class AbstractFeatureBase {
 
   static featureName = ''
-  static order: 'normal' | 'pre' | 'next' = 'normal' as const;
+  public order: 'normal' | 'pre' | 'next' = 'normal' as const;
 
   get container() {
     return this.context.container;

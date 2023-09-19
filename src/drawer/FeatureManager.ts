@@ -23,7 +23,7 @@ export class FeatureManager {
     container: any;
   }
 
-  public managers: Map<string, any>
+  public managers: Map<string, InstanceType<typeof FeatureBase>>
 
   constructor(diagram: any) {
     this.diagram = diagram
@@ -33,10 +33,10 @@ export class FeatureManager {
     this.managers = new Map();
   }
 
-  public appendFeature(Feat: any) {
+  public appendFeature<T extends typeof FeatureBase>(Feat: T) {
     const ins = new Feat(this.featureContext);
 
-    this.managers.set(ins.name, ins);
+    this.managers.set(Feat.featureName, ins);
     return this;
   }
 
@@ -45,9 +45,9 @@ export class FeatureManager {
   }
 
   public execute() {
-    const postList: unknown[] = [];
-    const preList: unknown[] = [];
-    const normalList: unknown[] = [];
+    const postList: InstanceType<typeof FeatureBase>[] = [];
+    const preList: InstanceType<typeof FeatureBase>[] = [];
+    const normalList: InstanceType<typeof FeatureBase>[] = [];
 
     this.managers.forEach((manager) => {
       if (manager.order === 'normal') {
@@ -60,12 +60,13 @@ export class FeatureManager {
     })
 
     const newWrapperList = [...preList, ...normalList, ...postList]
+    console.log(newWrapperList[0].install);
     newWrapperList.forEach(manager => manager?.install())
   }
 
   public getPlugin<T extends typeof FeatureBase>(feature: T): InstanceType<T> | null {
     const name = feature.featureName;
-    return this.managers.has(name) ? this.managers.get(name): null;
+    return this.managers.has(name) ? this.managers.get(name) as InstanceType<T> : null;
   }
 
   public dispose() {
@@ -75,3 +76,5 @@ export class FeatureManager {
     this.managers.clear()
   }
 }
+
+type zz = InstanceType<typeof FeatureBase>;

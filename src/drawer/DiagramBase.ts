@@ -1,44 +1,42 @@
-
-
 // Diagram
 import { DiagramController } from "./DiagramController";
 
 import { FeatureManager } from "./FeatureManager";
+import { DeleteALinkFeature } from "./Features/deleteALinkFeature";
+import { DeleteANodeFeature } from "./Features/deleteANodeFeature";
 import { LinkNodeHelper } from "./LinkNodeHelper";
+import { register, getTeleport } from "@antv/x6-vue-shape";
 
 import { Graph, Events, Basecoat, Shape, Node, Edge, Cell } from "@antv/x6";
-import type { EventArgs, } from "@antv/x6";
+import type { EventArgs } from "@antv/x6";
 
-import type { Options } from '@antv/x6/es/graph/options'
+import type { Options } from "@antv/x6/lib/graph/options";
+import CustomNode from "./Nodes/CustomNode.vue";
+import { CanvasNodeLinkManager } from "./Features/NodeLinkManager";
+import { RuleFeature } from "./Features/ruleFeature";
 
-// export const EVENT_NAME = {
-//   LOADED: 'loaded',
-//   LAYOUT: 'layout',
-//   DESTROY: 'destroy',
-//   DIAGRAM_ZOOM: 'diagram-zoom',
-//   DIAGRAM_MOUSEMOVE: 'diagram-mousemove',
-//   DIAGRAM_UPDATED: 'diagram-updated',
-//   NODE_CLICK: 'node-click',
-//   NODE_REMOVE: 'node-removed',
-//   NODE_DBCLICK: 'node-dbclick',
-//   ANCHOR_DRAG_END: 'anchor-drag-end',
-//   ANCHOR_MOUSE_ENTER: 'anchor-mouse-enter',
-//   ANCHOR_MOUSE_LEAVE: 'anchor-mouse-leave',
-//   NODE_MOUSE_ENTER: 'node-mouse-enter',
-//   NODE_MOUSE_LEAVE: 'node-mouse-leave',
-//   LINK_MOUSE_ENTER: 'link-mouse-enter',
-//   LINK_MOUSE_LEAVE: 'link-mouse-leave',
-//   NODE_DRAG_END: 'node-drag-start',
-//   NODE_DRAG_START: 'node-drag-start',
-//   CONTEXTMENU_SHOW: 'contextmenu-show',
-//   LINK_HOVER: 'link-hover',
-//   LINK_CLICK: 'link-click',
-//   LINK_DB_CLICK: 'link-db-click',
-//   LINK_DRAG_END: 'link-drag-end',
-//   PATH_MENU_SHOW: 'pathmenu-show',
-//   PATH_MENU_HIDE: 'pathmenu-hide',
-//   PATH_MENU_CLICK: 'tvision-pathmenu-item-clicked',
-// } as const;
+register({
+  shape: "custom-vue-node",
+  width: 180,
+  height: 32,
+  component: CustomNode,
+});
+
+export type NodeType = {
+  // "only_out"
+  conf_type: string;
+  description: string;
+  label: 'light-icon-component-output-tdw',
+  node_group: "读取",
+  node_input: { key: string, description: string, type: string }[],
+  node_output: { key: string, description: string, type: string }[],
+  // 'input_tdw'
+  node_type: string;
+  // 1217
+  node_type_id: number;
+}
+
+
 
 export class DiagramBase extends Basecoat<Events<any>> {
   public diagram: Graph | null = null;
@@ -49,53 +47,49 @@ export class DiagramBase extends Basecoat<Events<any>> {
 
   public linkNodeHelper: LinkNodeHelper;
   public featureManager: FeatureManager;
+  public nodeLinkManager: CanvasNodeLinkManager;
 
   private _container: HTMLDivElement | null = null;
 
   constructor() {
     super();
-
-    this.controller = null;
     this.target = null;
-
     this.linkNodeHelper = new LinkNodeHelper(this);
     this.featureManager = new FeatureManager(this);
+    this.controller = new DiagramController(this);
+    this.nodeLinkManager = new CanvasNodeLinkManager(this);
   }
 
   get zoomValue() {
     return this.diagram?.zoom();
   }
 
-  public dispose() {
-    super.dispose();
-    this.diagram?.dispose();
-    this.featureManager.dispose();
-  }
-
   public init(target: string | HTMLDivElement, opts: Partial<Options.Manual>) {
     this.target = initTarget(target);
 
     this.initDiagram(opts);
-    this.controller = new DiagramController(this);
-
     this.draw();
+    this.initFeatures();
+  }
 
-    this.featureManager!.execute();
+  public initFeatures() {
+    this.featureManager
+      .appendFeature(DeleteALinkFeature)
+      .appendFeature(DeleteANodeFeature)
+      .appendFeature(RuleFeature)
+
+    this.featureManager.execute();
   }
 
   public getInternalLinks() {
-    // return this.diagram?._linkDataMap ?? [];
     return this.diagram?.getEdges() ?? [];
   }
 
   public getInternalNodes() {
-    // return this.diagram?._nodeDataMap ?? [];
     return this.diagram?.getNodes() ?? [];
   }
 
-  public getAllNodeMap() {
-    // return turnObjectToMap(this.getInternalNodes());
-  }
+  public getAllNodeMap() {}
 
   /**
    * 获取指定节点
@@ -103,7 +97,8 @@ export class DiagramBase extends Basecoat<Events<any>> {
    * @returns
    */
   public getNode(nodeId: string) {
-    return this.getAllNodeMap().get(nodeId) ?? {};
+    // return this.getAllNodeMap().get(nodeId) ?? {};
+    return this.diagram?.getCellById(nodeId) ?? null;
   }
 
   /**
@@ -112,21 +107,19 @@ export class DiagramBase extends Basecoat<Events<any>> {
    * @returns
    */
   public getANodeProps(nodeId: string) {
-    return this.getAllNodeMap().get(nodeId)?.props ?? null;
+    return this.diagram?.getCellById(nodeId).getData() ?? null;
   }
 
   public cleanDiagram() {
-    // this.diagram?.remove([]);
-    const internalLinks = this.getInternalLinks();
-    const internalNodes = this.getInternalNodes();
+    this.diagram?.clearCells();
+  }
 
-    Object.entries(internalLinks).forEach(([key, link]) => {
-      this.removeNodeOrLinkIns(link as { id: string });
+  public dispose() {
+    super.dispose();
+    this.diagram?.clearCells({
+      silent: true,
     });
-
-    Object.entries(internalNodes).forEach(([key, node]) => {
-      this.removeNodeOrLinkIns(node as { id: string });
-    });
+    this.featureManager.dispose();
   }
 
   public removeNodeOrLinkIns(data: { id: string }) {
@@ -140,8 +133,8 @@ export class DiagramBase extends Basecoat<Events<any>> {
     if (!id) {
       return;
     }
-    const cell = this.diagram?.getCellById(id)
-    if(!cell) return;
+    const cell = this.diagram?.getCellById(id);
+    if (!cell) return;
     cell.remove();
   }
 
@@ -149,16 +142,15 @@ export class DiagramBase extends Basecoat<Events<any>> {
     console.log(`请你确定这个方法有用吧哥哥`);
   }
 
-  public initDiagram(opts: Record<string, any>) {
+  public initDiagram(opts: Partial<Options.Manual>) {
     if (this.target === null) {
       throw new Error(`target: 不能为 ${this.target}`);
     }
-    this.diagram = new Graph(
-      {
-        container: this.target,
-        ...opts
-      }
-    )
+
+    this.diagram = new Graph({
+      container: this.target!,
+      ...opts,
+    });
   }
 
   public initTarget(target: string | HTMLDivElement) {
@@ -192,33 +184,43 @@ export class DiagramBase extends Basecoat<Events<any>> {
     if (!nodeId) {
       return;
     }
-    const cell = this.diagram?.getCellById(nodeId)
-    if(!cell) return;
+    const cell = this.diagram?.getCellById(nodeId);
+    if (!cell) return;
     cell.setData(props, {
       deep: true,
       overwrite: false,
-    })
+    });
   };
 
+  public appendNewNode(node: NodeType) {
+    // this.diagram?.addNode({
+    //   shape: 'custom-vue-node',
+    //   x: 100,
+    //   y: 200,
+    //   width: 180,
+    //   height: 32,
+    //   data: node,
+    //   label: node.label,
+    // })
+    const data = this.nodeLinkManager.buildNode(node);
+    this.diagram?.addNode(data);
+  }
+
   public updateLinkProps(nodeId: string, props: Record<string, any>) {
-    // this.diagram?.updateNodes({
-    //   id: nodeId,
-    //   props,
-    // });
-    const cell = this.diagram?.getCellById(nodeId)
-    if(!cell) return;
+    const cell = this.diagram?.getCellById(nodeId);
+    if (!cell) return;
     cell.setData(props, {
       deep: true,
       overwrite: false,
-    })
+    });
   }
 
   public generatorUniqueId(num = 6) {
     return `id${new Date().valueOf()}_${generateMixed(num)}`;
   }
 
-  public appendNewNode(opts: Record<string, any>): void {}
-  public appendNewLink(opts: Record<string, any>): void {}
+  // public appendNewNode(opts: Record<string, any>): void {}
+  // public appendNewLink(opts: Record<string, any>): void {}
 
   getContainerRect = () => {
     return this.diagram?.container.getBoundingClientRect() ?? null;
@@ -241,7 +243,7 @@ function initTarget(target: string | HTMLDivElement | unknown) {
   throw new Error(`you need to init target`);
 }
 
-function generateMixed(n) {
+function generateMixed(n: number) {
   const res = Math.random()
     .toString(n + 2)
     .substr(2, 10);
